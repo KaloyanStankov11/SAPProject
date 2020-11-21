@@ -1,9 +1,9 @@
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.BufferedReader;
 import java.io.*;
 import java.util.*;
+
 
 public class File {
 
@@ -13,18 +13,18 @@ public class File {
 		ArrayList<ArrayList<String>> ListOfWords = new ArrayList<ArrayList<String>>();
 		ReadFromFile(scan, ListOfWords);
 		printRows();
-		int choosen = 0;
+		String choosen;
 		while(true) {
 			
 			showMenu();
-			choosen = Integer.parseInt(scan.nextLine());
-			if(choosen == 1) { 
+			choosen = scan.nextLine();
+			if(choosen.equals("1")) { 
 				changeRows(scan, ListOfWords); printRows();
 			}
-			else if(choosen == 2) {
+			else if(choosen.equals("2")) {
 				changeWords(scan, ListOfWords); printRows();
 			}
-			else if(choosen == 3) return;
+			else if(choosen.equals("3")) return;
 			
 			else {
 				System.out.println("Wrong command! Try again");
@@ -35,66 +35,87 @@ public class File {
 	}
 
 	public static void changeRows(Scanner scan, ArrayList<ArrayList<String>> ListOfWords) {
-		System.out.print("Enter first row: ");
-		int firstRow = Integer.parseInt(scan.nextLine());
-		System.out.print("Enter second row: ");
-		int secondRow = Integer.parseInt(scan.nextLine());
-		ArrayList<String>extraRow = new ArrayList<String>();
-		extraRow = ListOfWords.get(firstRow);
-		ListOfWords.set(firstRow, ListOfWords.get(secondRow));
-		ListOfWords.set(secondRow, extraRow);
-		WriteToFile(ListOfWords);
-		System.out.println("Rows changed");
+		while(true) {
+			System.out.print("Enter first row: ");
+			int firstRow = Integer.parseInt(scan.nextLine());
+			System.out.print("Enter second row: ");
+			int secondRow = Integer.parseInt(scan.nextLine());
+			if(firstRow >= ListOfWords.size() || secondRow >= ListOfWords.size() || firstRow<0 || secondRow<0) {
+				printRows();
+				System.out.println("Wrong number of row! Try again");
+			}
+			else {
+				ArrayList<String>extraRow = new ArrayList<String>();
+				extraRow = ListOfWords.get(firstRow);
+				ListOfWords.set(firstRow, ListOfWords.get(secondRow));
+				ListOfWords.set(secondRow, extraRow);
+				WriteToFile(ListOfWords);
+				break;
+			}
+		}
 		
 	}
 	
 	public static void changeWords(Scanner scan, ArrayList<ArrayList<String>> ListOfWords) {
-		System.out.print("Enter first row: ");
-		int firstRow = Integer.parseInt(scan.nextLine());
-		System.out.print("Enter first word: ");
-		int firstWord = Integer.parseInt(scan.nextLine());
-		System.out.print("Enter second row: ");
-		int secondRow = Integer.parseInt(scan.nextLine());
-		System.out.print("Enter second word: ");
-		int secondWord = Integer.parseInt(scan.nextLine());
-		String extraWord;
-		extraWord = ListOfWords.get(firstRow).get(firstWord);
-		ListOfWords.get(firstRow).set(firstWord, ListOfWords.get(secondRow).get(secondWord));
-		ListOfWords.get(secondRow).set(secondWord, extraWord);
-		WriteToFile(ListOfWords);
+		while(true) {
+		
+			System.out.print("Enter first row: ");
+			int firstRow = Integer.parseInt(scan.nextLine());
+			System.out.print("Enter first word: ");
+			int firstWord = Integer.parseInt(scan.nextLine());
+			System.out.print("Enter second row: ");
+			int secondRow = Integer.parseInt(scan.nextLine());
+			System.out.print("Enter second word: ");
+			int secondWord = Integer.parseInt(scan.nextLine());
+			if(firstRow >= ListOfWords.size() || secondRow >= ListOfWords.size() || firstRow<0 || secondRow<0 || firstWord<0 || secondWord<0 || firstWord>=ListOfWords.get(firstRow).size() || secondWord>=ListOfWords.get(secondRow).size()) {
+				printRows();
+				System.out.println("Wrong number of row or word! Try again");
+			}
+			else {
+				String extraWord;
+				extraWord = ListOfWords.get(firstRow).get(firstWord);
+				ListOfWords.get(firstRow).set(firstWord, ListOfWords.get(secondRow).get(secondWord));
+				ListOfWords.get(secondRow).set(secondWord, extraWord);
+				WriteToFile(ListOfWords);
+				break;
+			}
+		}
 	}
 	
 	public static void ReadFromFile(Scanner scan, ArrayList<ArrayList<String>> ListOfWords){
 		System.out.println("Enter file path:");
-		filePath = scan.nextLine();
 		String[] words;
 		int row = 0;
 		BufferedReader br = null;
-		   try {
-
+		while(true) {
+		try {
+			filePath = scan.nextLine();
 		      String currentLine;
-
 		      br = new BufferedReader(new FileReader(filePath));
-
 		      while ((currentLine = br.readLine()) != null) {
 		    	  words = currentLine.split(" ");
 		    	  ListOfWords.add(row, new ArrayList<String>());
 		    	  Collections.addAll(ListOfWords.get(row), words);
 		    	  row++;
+		    	  
 		      }
-
 		    } catch (IOException e) {
-		    	System.out.println("No such file or directory!");
-		         e.printStackTrace();
-		    } finally {
+		    	printRows();
+		    	System.out.println("No such directory! Try again!");
+		    }catch (NullPointerException exception) {
+		    	printRows();
+		    	System.out.println("No such directory! Try again!");
+		    }finally {
 		        try {
-		            if (br != null)br.close();
-		            
+		            if (br != null) {
+		            	br.close();
+		            	break;
+		            }
 		         } catch (IOException ex) {
 		            ex.printStackTrace();
 		     }
 		   }
-		   
+		}
 	}
 	
 	public static void WriteToFile(ArrayList<ArrayList<String>> ListOfWords) {
@@ -123,7 +144,7 @@ public class File {
 	}
 	
 	public static void showMenu() {
-		System.out.println("Choose a command:");
+		System.out.println("Choose a number of command:");
 		System.out.println("1. Change rows");
 		System.out.println("2. Change words");
 		System.out.println("3. Exit");
